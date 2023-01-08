@@ -1,16 +1,20 @@
 #include <Arduino.h>
 #include "controleled.h"
+#include "controlawifi.h"
 
 #define PINODOLED D1
 #define NUMERODELEDS 16
 
 ControlaLed leds(PINODOLED, NUMERODELEDS, NEO_BGR + NEO_KHZ800);
 
+
 void setup() {
   Serial.begin(115200);
   delay(3000);
   Serial.println("Inicializando!");
   leds.inicializa();
+
+  ControlaWIFI controlaWIFI;
 
   Serial.println("Fim Setup");
 }
