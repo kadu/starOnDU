@@ -1,4 +1,3 @@
-#pragma once
 #include "controlawifi.h"
 
 #include <ESP8266WiFi.h>
