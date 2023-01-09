@@ -2,12 +2,14 @@
 #include "controleled.h"
 #include "controlawifi.h"
 #include "controlaWebserver.h"
+#include "staron.h"
 
 #define PINODOLED D1
 #define NUMERODELEDS 16
 
 ControlaLed leds(PINODOLED, NUMERODELEDS, NEO_BGR + NEO_KHZ800);
 ControlaWebserver controlaWebserver;
+StarON starON;
 
 void setup() {
   Serial.begin(115200);
@@ -18,6 +20,10 @@ void setup() {
   ControlaWIFI controlaWIFI;
 
   controlaWebserver.configura();
+
+  starON.adicionaSecretEID("teste", "outroteste");
+  starON.adicionaStreamer(0, "kadu", 10,20,30);
+  starON.recuperaStreamer(0);
 
 
   Serial.println("Fim Setup");
