@@ -2,6 +2,7 @@
 #include "controleled.h"
 #include "controlawifi.h"
 #include "controlaWebserver.h"
+#include "controlaTwitch.h"
 #include "staron.h"
 
 #define PINODOLED D1
@@ -10,6 +11,7 @@
 ControlaLed leds(PINODOLED, NUMERODELEDS, NEO_BGR + NEO_KHZ800);
 ControlaWebserver controlaWebserver;
 StarON starON;
+ControlaTwitch controlaTwitch("token");
 
 void setup() {
   Serial.begin(115200);
