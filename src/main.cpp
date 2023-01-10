@@ -1,8 +1,8 @@
 #include <Arduino.h>
-#include "controleled.h"
-#include "controlawifi.h"
-#include "controlaWebserver.h"
-#include "controlaTwitch.h"
+#include "controles/controleled.h"
+#include "controles/controlawifi.h"
+#include "controles/controlaWebserver.h"
+#include "controles/controlaTwitch.h"
 #include "staron.h"
 
 #define PINODOLED D1
