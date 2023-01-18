@@ -7,4 +7,5 @@
 
 ControlaWIFI::ControlaWIFI() {
     this->wifiManager.autoConnect("StarON");
+    WiFi.hostname("staron");
 }

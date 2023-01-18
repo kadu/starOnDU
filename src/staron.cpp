@@ -33,3 +33,8 @@ void StarON::recuperaStreamer(int index) {
 StarON::StarON() {
     Serial.println("StarON");
 };
+
+void StarON::debug() {
+    // Serial.println(this->secret.c_str());
+    // Serial.println(this->streamerid.c_str());
+}
