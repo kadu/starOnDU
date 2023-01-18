@@ -4,14 +4,15 @@
 #include "controles/controlaWebserver.h"
 #include "controles/controlaTwitch.h"
 #include "staron.h"
+#include "segredos/segredos.h"
 
 #define PINODOLED D1
 #define NUMERODELEDS 16
 
 ControlaLed leds(PINODOLED, NUMERODELEDS, NEO_BGR + NEO_KHZ800);
 ControlaWebserver controlaWebserver;
+ControlaTwitch controlaTwitch(STREAMERID, SEGREDO);
 StarON starON;
-ControlaTwitch controlaTwitch("token");
 
 void setup() {
   Serial.begin(115200);
@@ -23,27 +24,23 @@ void setup() {
 
   controlaWebserver.configura();
 
-  starON.adicionaSecretEID("teste", "outroteste");
+  starON.adicionaSecretEID(SEGREDO, STREAMERID);
   starON.adicionaStreamer(0, "kadu", 10,20,30);
   starON.recuperaStreamer(0);
 
+  // bool ret = controlaTwitch.streamerIsOn("casimito", STREAMERID, SEGREDO);
+
+  int ret = controlaTwitch.streamerIsOn("kaduzius");
+  Serial.print("\n\nDebug controlaTwitch.streamerIsOn ");
+  Serial.println(ret);
+
+  ret = controlaTwitch.streamerIsOn("em1dio");
+  Serial.print("\n\nDebug controlaTwitch.streamerIsOn");
+  Serial.println(ret);
 
   Serial.println("Fim Setup");
 }
 
 void loop() {
   controlaWebserver.loop();
-  // for (size_t i = 0; i < NUMERODELEDS; i++)
-  // {
-  //   leds.limpa();
-  //   leds.configuraCorDoPixel(i, RED);
-  //   leds.mostra();
-  //   delay(1200);
-  //   leds.configuraCorDoPixel(i, GREEN);
-  //   leds.mostra();
-  //   delay(1200);
-  //   leds.configuraCorDoPixel(i, BLUE);
-  //   leds.mostra();
-  //   delay(1200);
-  // }
 }

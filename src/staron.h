@@ -22,5 +22,5 @@ class StarON {
         void adicionaSecretEID(std::string secret, std::string streamerid);
         void removeStreamer(int index);
         void recuperaStreamer(int index);
-
+        void debug();
 };

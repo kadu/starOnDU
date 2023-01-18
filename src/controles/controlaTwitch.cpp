@@ -1,178 +1,157 @@
+#include "controlaTwitch.h"
+#include <string.h>
 #include <ESP8266HTTPClient.h>
 #include <ESP8266WiFi.h>
 #include <WiFiClientSecureBearSSL.h>
 #include <ArduinoJson.h>
 
-#include "controlaTwitch.h"
+StaticJsonDocument<2048> doc;
 
-ControlaTwitch::ControlaTwitch(std::string token) {
-    this->token = token;
+ControlaTwitch::ControlaTwitch(char *clientId, char *clientSecret)
+{
+  this->identification.clientId = clientId;
+  this->identification.clientSecret = clientSecret;
 }
 
-bool ControlaTwitch::awaitTimeOut(WiFiClientSecure *client) {
-    delay(1000);
-    unsigned long timeout = millis();
-    while (client->available() < 64)
+void ControlaTwitch::getAuth()
+{
+  BearSSL::WiFiClientSecure myClient;
+  HTTPClient https;
+  myClient.setInsecure();
+
+  Serial.print("Trying to get oauth2 token...: ");
+  if (!https.begin(myClient, "https://id.twitch.tv/oauth2/token"))
+  {
+    Serial.println("Unable to connect");
+  }
+
+  https.addHeader("Content-Type", "application/x-www-form-urlencoded");
+
+  char data[180];
+
+  strcpy(data, "client_id=");
+  strcat(data, this->getClientId());
+  strcat(data, "&client_secret=");
+  strcat(data, this->getClientSecret());
+  strcat(data, "&grant_type=client_credentials");
+  int httpCode = https.POST(data);
+
+  if (httpCode == 0 || httpCode >= 400)
+  {
+    Serial.println("[HTTPS] POST... failed, error: " + https.errorToString(httpCode));
+    Serial.println("Error on HTTP request");
+  }
+
+  Serial.println("Token received.");
+
+#ifdef DEBUG
+  Serial.println("[HTTPS] POST... code: " + String(httpCode) + " len: " + https.getSize());
+  Serial.println("Access token received.");
+  Serial.println(https.getString());
+#endif
+
+  if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY)
+  {
+    const size_t bufferSize = JSON_ARRAY_SIZE(1) + JSON_OBJECT_SIZE(1) + JSON_OBJECT_SIZE(9) + 1000;
+
+    // Allocate JsonBuffer
+    DynamicJsonDocument root(bufferSize);
+
+    // Parse JSON object
+    DeserializationError error = deserializeJson(root, https.getString());
+    if (error)
     {
-        if ((millis() - timeout) > 5000)
-        {
-            Serial.println(">>> Client Timeout !");
-            client->stop();
-            return true;
-        }
+      Serial.print(F("getUserData deserializeJson() failed: "));
+      Serial.println(error.c_str());
     }
-    return false;
+    else
+    {
+      this->identification.token = (char *)root["access_token"].as<const char *>();
+    }
+  }
 }
 
-bool ControlaTwitch::handGetTwitchToken(std::string ass_, std::string clientId, std::string clientSecret) {
-    BearSSL::WiFiClientSecure myClient;
-    HTTPClient https;
+  int ControlaTwitch::streamerIsOn(char *streamerName)
+  {
+    getAuth();
 
-    myClient.setInsecure();
-
-    if (!https.begin(myClient, TOKENURL)) {
-        Serial.println("Unable to connect");
-        return false;
-    }
-
-    https.addHeader("Content-Type", "application/x-www-form-urlencoded");
-
-    char data[180];
-
-    strcpy(data, "client_id=");
-    strcat(data, clientId.c_str());
-    strcat(data, "&client_secret=");
-    strcat(data, clientSecret.c_str());
-    strcat(data, "&grant_type=client_credentials");
-
-    Serial.print("clientId: ");
-    Serial.println(clientId.c_str());
-    Serial.println("clientSecret: ");
-    Serial.print(clientSecret.c_str());
-
-    int httpCode = https.POST(data);
-
-    if (httpCode == 0) {
-        Serial.printf("[HTTPS] POST... failed, error: %s\r", https.errorToString(httpCode).c_str());
-        Serial.println("Error on HTTP request");
-        return false;
-    }
-
-    Serial.printf("[HTTPS] POST... code: %d len: %d \r", httpCode, https.getSize());
-    Serial.println(https.getString());
-
-    if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY) {
-        String payload = https.getString();
-
-        StaticJsonDocument<2048> doc;
-        auto error = deserializeJson(doc, payload);
-        if (error) {
-            Serial.println("deserializeJson() failed: " + String(error.c_str()));
-            return false;
-        }
-
-        return true;
-    }
-
-    return false;
-}
-
-bool ControlaTwitch::checkToken()
-{
-    return strlen(this->token.c_str()) > 0;
-}
-
-bool ControlaTwitch::getTwitchToken(std::string clientId, std::string clientSecret)
-{
-    if (!WiFi.isConnected()) {
-        return false;
-    }
-    if (lasTimeGetToken && (millis() - lasTimeGetToken) < (checkToken() ? 60000 : 3000)) {
-        return this->checkToken();
-    }
-
-    if (!this->handGetTwitchToken(this->token, clientId, clientSecret)) {
-        char tempToken[64];
-        memset(tempToken, 0, 64);
-        this->token = tempToken;
-    }
-
-    lasTimeGetToken = millis();
-    return this->checkToken();
-}
-
-bool ControlaTwitch::handStreamerIsOn(std::string streamer, std::string clientId)
-{
     BearSSL::WiFiClientSecure myClient;
     HTTPClient https;
 
     myClient.setInsecure();
     char url[256];
 
-    sprintf(url, "https://api.twitch.tv/helix/streams?user_login=%s", streamer.c_str());
+    sprintf(url, "https://api.twitch.tv/helix/streams?user_login=%s", streamerName);
+    Serial.println("Getting info from streamer (url): " + String(url));
 
-    if (!https.begin(myClient, url)) {
+    if (!https.begin(myClient, url))
+    {
         Serial.println("2 connection failed");
         Serial.println("wait 5 sec...");
         return false;
     }
 
-    char bearer[200];
-    sprintf(bearer, "Bearer %s", this->token.c_str());
-    https.addHeader("Authorization", bearer);
-    https.addHeader("Client-Id", clientId.c_str());
+    https.addHeader("Authorization", "Bearer " + String(this->identification.token));
+    https.addHeader("Client-Id", this->identification.clientId);
 
     int httpCode = https.GET();
 
-    if (httpCode == 0) {
-        Serial.printf("1[HTTPS] GET... failed, error: %s\r", https.errorToString(httpCode).c_str());
+    if (httpCode == 0)
+    {
+        Serial.println("[HTTPS] GET... failed, error: " + https.errorToString(httpCode));
         Serial.println("Error on HTTP request");
         return false;
     }
 
-    Serial.printf("2[HTTPS] GET... code: %d len: %d \r", httpCode, https.getSize());
-    Serial.println(https.getString());
-    if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY) {
+#ifdef DEBUG
+    Serial.println();
+    Serial.println("[HTTPS] GET... code: " + String(httpCode) +" len: "+ https.getSize());
+#endif
+    if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY)
+    {
         String payload = https.getString();
 
-        StaticJsonDocument<2048> doc;
         auto error = deserializeJson(doc, payload);
-        if (error) {
+        if (error)
+        {
             Serial.println("deserializeJson() failed: " + String(error.c_str()));
             return false;
         }
 
+#ifdef DEBUG
+        Serial.println("############# Returned payload: ");
+        serializeJsonPretty(doc, Serial);
+        Serial.println("");
+        Serial.println("############# Payload ended");
+#endif
+
         const char *user_name = doc["data"][0]["user_name"];
-        Serial.println(user_name);
+        bool isOn = user_name != NULL;
 
-        //TODO: Verificar porque precisa fazer essa checagem
-        //String nome = String(user_name);
+        Serial.printf("Streamer %s is %s", streamerName, isOn ? "ON" : "OFF" );
 
-        // if (nome.equalsIgnoreCase(streamer.c_str())) {
-        //     if (streamerName != user_name) {
-        //         Serial.print("Corrigindoo nome inserido de: [" + streamerName + "] para [" + user_name + "]");
-        //         Serial.print("");
-        //         saveData("STREAMER", user_name);
-        //         // corrigirnome();
-
-        //         streamerName = user_name;
-        //     }
-        // }
-        return user_name != NULL;
+        return isOn;
     }
 
     return false;
-}
+  }
 
-bool ControlaTwitch::streamerIsOn(std::string streamerName, std::string clientId, std::string clientSecret) {
-    if (this->getTwitchToken(clientId, clientSecret)) {
-        if ((millis() - latTimeGetStreamerOn) < 3000) {
-            return isStreamerOn;
-        }
+  char *ControlaTwitch::getClientId()
+  {
+    return this->identification.clientId;
+  }
 
-        isStreamerOn = handStreamerIsOn(streamerName, clientId);
-        latTimeGetStreamerOn = millis();
-        return isStreamerOn;
-    }
-    return false;
-}
+  char *ControlaTwitch::getClientSecret()
+  {
+    return this->identification.clientSecret;
+  }
+
+  void ControlaTwitch::setToken(char *token)
+  {
+    this->identification.token = token;
+  }
+
+  char *ControlaTwitch::getToken()
+  {
+    return this->identification.token;
+  }
