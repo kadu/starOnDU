@@ -28,8 +28,6 @@ void setup() {
   starON.adicionaStreamer(0, "kadu", 10,20,30);
   starON.recuperaStreamer(0);
 
-  // bool ret = controlaTwitch.streamerIsOn("casimito", STREAMERID, SEGREDO);
-
   int ret = controlaTwitch.streamerIsOn("kaduzius");
   Serial.print("\n\nDebug controlaTwitch.streamerIsOn ");
   Serial.println(ret);
