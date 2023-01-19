@@ -7,6 +7,7 @@ class ControlaWebserver {
         ESP8266WebServer server = {80};
         void notFound();
         void index();
+        bool handleFileRead(String path);
 
     public:
         ControlaWebserver() = default;
