@@ -71,6 +71,9 @@ let pegaStreamersJaCadastrados = () => {
       } else {
         console.log("Nao consegui recuperar informaçoes");
       }
+      document.getElementById('body').classList.toggle('loading');
+    }).catch(error => {
+      document.getElementById('body').classList.toggle('loading');
     });
 }
 

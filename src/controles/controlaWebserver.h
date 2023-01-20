@@ -9,6 +9,7 @@ class ControlaWebserver {
         void index();
         bool handleFileRead(String path);
         void setstreamers();
+        void setsecrets();
 
     public:
         ControlaWebserver() = default;

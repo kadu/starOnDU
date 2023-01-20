@@ -3,18 +3,24 @@
   <head>
     <title>Formulário de Segredos</title>
   </head>
-  <body>
+  <link rel="stylesheet" href="loading.css">
+
+
+  <body id="body" class="loading">
+    <div class="ldBar" data-value="50"></div>
     Para pegar o ID e o segredo -> <a href="https://dev.twitch.tv/console/apps/create">Twitch Dev Create App</a> <br><br>
 
-    <form>
+    <form autocomplete="off">
       <label for="nome_cliente">Nome do Cliente:</label>
       <input type="text" id="nome_cliente" name="nome_cliente"><br><br>
       <label for="segredo">Segredo:</label>
-      <input type="text" id="segredo" name="segredo"><br><br>
-      <input type="submit" value="Enviar">
+      <input type="password" id="segredo" name="segredo"><input type="button" id="mostrar" value="Mostrar">
+      <br><br>
+      <input type="button" id="btnenviar" value="Enviar">
     </form>
     <br>
     <a href="/">Voltar</a>
+    <div class="modal"></div>
   </body>
   <script src="segredos.js"></script>
 </html>

@@ -10,6 +10,7 @@ void ControlaWebserver::configura()
     LittleFS.begin();
     this->server.onNotFound(std::bind(&ControlaWebserver::notFound, this));
     this->server.on("/setstreamer", std::bind(&ControlaWebserver::setstreamers, this));
+    this->server.on("/setsecrets", std::bind(&ControlaWebserver::setsecrets, this));
     this->server.begin();
 
     MDNS.begin("StarON");
@@ -18,8 +19,11 @@ void ControlaWebserver::configura()
 
 void ControlaWebserver::notFound()
 {
+    Serial.println("NotFound");
+
     if (!handleFileRead(server.uri()))
     {
+        Serial.println("NotFound sem arquivo");
         String message = "File Not Found\n\n";
         message += "URI: ";
         message += server.uri();
@@ -64,6 +68,9 @@ bool ControlaWebserver::handleFileRead(String path)
     {
         contentType = "image/x-icon";
     }
+    else if (path.endsWith(".json")) {
+        contentType = "application/json";
+    }
     File file = LittleFS.open(path, "r");
     if (file)
     {
@@ -77,6 +84,16 @@ bool ControlaWebserver::handleFileRead(String path)
 void ControlaWebserver::setstreamers()
 {
     File file = LittleFS.open("/streamers.json", "w");
+    String json = this->server.arg("plain");
+    Serial.println(json);
+    file.print(json);
+    file.close();
+    server.send(200, "application/json", "{\"status\":\"success\"}");
+}
+
+void ControlaWebserver::setsecrets()
+{
+    File file = LittleFS.open("/secrets.json", "w");
     String json = this->server.arg("plain");
     Serial.println(json);
     file.print(json);
