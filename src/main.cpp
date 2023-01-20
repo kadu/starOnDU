@@ -27,6 +27,7 @@ void setup() {
   starON.adicionaSecretEID(SEGREDO, STREAMERID);
   starON.adicionaStreamer(0, "kadu", 10,20,30);
   starON.recuperaStreamer(0);
+  /*
 
   int ret = controlaTwitch.streamerIsOn("kaduzius");
   Serial.print("\n\nDebug controlaTwitch.streamerIsOn ");
@@ -35,7 +36,7 @@ void setup() {
   ret = controlaTwitch.streamerIsOn("em1dio");
   Serial.print("\n\nDebug controlaTwitch.streamerIsOn");
   Serial.println(ret);
-
+*/
   Serial.println("Fim Setup");
 }
 

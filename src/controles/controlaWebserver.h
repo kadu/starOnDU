@@ -8,6 +8,7 @@ class ControlaWebserver {
         void notFound();
         void index();
         bool handleFileRead(String path);
+        void setstreamers();
 
     public:
         ControlaWebserver() = default;
