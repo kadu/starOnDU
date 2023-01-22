@@ -7,7 +7,12 @@
 
 StaticJsonDocument<2048> doc;
 
-ControlaTwitch::ControlaTwitch(char *clientId, char *clientSecret)
+ControlaTwitch::ControlaTwitch()
+{
+
+}
+
+void ControlaTwitch::adicionaChaves(char *clientId, char *clientSecret)
 {
   this->identification.clientId = clientId;
   this->identification.clientSecret = clientSecret;
@@ -91,8 +96,8 @@ void ControlaTwitch::getAuth()
         return false;
     }
 
-    https.addHeader("Authorization", "Bearer " + String(this->identification.token));
-    https.addHeader("Client-Id", this->identification.clientId);
+    https.addHeader("Authorization", "Bearer " + String(this->identification.token.c_str()));
+    https.addHeader("Client-Id", this->identification.clientId.c_str());
 
     int httpCode = https.GET();
 
@@ -128,8 +133,6 @@ void ControlaTwitch::getAuth()
         const char *user_name = doc["data"][0]["user_name"];
         bool isOn = user_name != NULL;
 
-        Serial.printf("Streamer %s is %s", streamerName, isOn ? "ON" : "OFF" );
-
         return isOn;
     }
 
@@ -138,12 +141,12 @@ void ControlaTwitch::getAuth()
 
   char *ControlaTwitch::getClientId()
   {
-    return this->identification.clientId;
+    return (char *)this->identification.clientId.c_str();
   }
 
   char *ControlaTwitch::getClientSecret()
   {
-    return this->identification.clientSecret;
+    return (char *)this->identification.clientSecret.c_str();
   }
 
   void ControlaTwitch::setToken(char *token)
@@ -153,5 +156,12 @@ void ControlaTwitch::getAuth()
 
   char *ControlaTwitch::getToken()
   {
-    return this->identification.token;
+    return (char *)this->identification.token.c_str();
+  }
+
+  void ControlaTwitch::debuga()
+  {
+    Serial.println("Debug 3");
+    Serial.print("Get Client ID "); Serial.println(this->getClientId());
+    Serial.print("Direto na variavel "); Serial.println(this->identification.clientId.c_str());
   }

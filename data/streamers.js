@@ -20,7 +20,7 @@ let pegaCor = (valor, cor) => {
 let pegaInformacoes = () => {
   let streamers = [];
 
-  for (let index = 1; index <= 5; index++) {
+  for (let index = 1; index <= 4; index++) {
     let streamer = 'streamer_name' + index;
     let cor = 'cor' + index;
 

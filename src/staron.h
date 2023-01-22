@@ -18,9 +18,17 @@ class StarON {
 
     public:
         StarON();
+        void configura();
         void adicionaStreamer(int index, std::string nome, int r, int g, int b);
         void adicionaSecretEID(std::string secret, std::string streamerid);
         void removeStreamer(int index);
         void recuperaStreamer(int index);
+        int recuperaStreamerR(int index);
+        int recuperaStreamerG(int index);
+        int recuperaStreamerB(int index);
+        std::string recuperaStreamerName(int index);
+        std::string recuperarClientId();
+        std::string recuperarSecret();
+
         void debug();
 };

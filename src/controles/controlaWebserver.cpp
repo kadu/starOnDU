@@ -19,8 +19,6 @@ void ControlaWebserver::configura()
 
 void ControlaWebserver::notFound()
 {
-    Serial.println("NotFound");
-
     if (!handleFileRead(server.uri()))
     {
         Serial.println("NotFound sem arquivo");

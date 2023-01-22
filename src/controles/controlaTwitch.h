@@ -1,12 +1,12 @@
 #pragma once
-
+#include <string>
 // #define DEBUG ON  // Descomentar para ver mensagens de debug
 
 struct TWITCH_VARS
 {
-  char *clientId;
-  char *clientSecret;
-  char *token;
+  std::string clientId;
+  std::string clientSecret;
+  std::string token;
 };
 
 class ControlaTwitch
@@ -15,11 +15,13 @@ class ControlaTwitch
     TWITCH_VARS identification;
 
   public:
-    ControlaTwitch(char *clientId, char *clientSecret);
+    ControlaTwitch();
     int streamerIsOn(char *streamerName);
+    void adicionaChaves(char *clientId, char *clientSecret);
     char *getClientId();
     char *getClientSecret();
     char *getToken();
     void setToken(char *token);
     void getAuth();
+    void debuga();
 };
