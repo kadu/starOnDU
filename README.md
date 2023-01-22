@@ -9,6 +9,6 @@ Fiquem a vontade para fazer o fork, só não esqueçam de deixar uma "estrelinha
 
 ### TO-DO List
 - [ ] Verificar necessidade do starOn.cpp/StarOn.h
-- [ ] Api para executar as alterações
-- [ ] HTMLs no LittleFS (a definir)
-- [ ] JS para realizar as alterações
+- [x] Api para executar as alterações
+- [x] HTMLs no LittleFS (a definir)
+- [x] JS para realizar as alterações
