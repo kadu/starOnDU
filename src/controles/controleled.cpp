@@ -1,5 +1,6 @@
 #include "controleled.h"
 #include <Adafruit_NeoPixel.h>
+#include <Arduino.h>
 
 ControlaLed::ControlaLed(int pin, int numpixels, neoPixelType t)
 {
@@ -23,5 +24,8 @@ void ControlaLed::mostra() {
 }
 
 void ControlaLed::configuraCorDoPixel(uint16_t n, uint32_t c) {
-  this->pixels.setPixelColor(n, c);
+  this->pixels.setPixelColor(n, c);  }
+
+void ControlaLed::configuraCorDoPixel(uint16_t n, uint8_t r, uint8_t g,uint8_t b) {
+  this->pixels.setPixelColor(n, r, g, b);
 }

@@ -26,6 +26,7 @@ class ControlaLed {
         void inicializa();
         void limpa();
         void configuraCorDoPixel(uint16_t n, uint32_t c);
+        void configuraCorDoPixel(uint16_t n, uint8_t r, uint8_t g,uint8_t b);
         void mostra();
 
 };
