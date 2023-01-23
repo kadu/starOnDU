@@ -17,6 +17,7 @@ void ControlaLed::inicializa()
 void ControlaLed::limpa()
 {
   this->pixels.clear();
+  this->pixels.show();
 }
 
 void ControlaLed::mostra() {

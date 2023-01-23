@@ -87,7 +87,9 @@ void ControlaTwitch::getAuth()
     char url[256];
 
     sprintf(url, "https://api.twitch.tv/helix/streams?user_login=%s", streamerName);
+#ifdef DEBUG
     Serial.println("Getting info from streamer (url): " + String(url));
+#endif
 
     if (!https.begin(myClient, url))
     {

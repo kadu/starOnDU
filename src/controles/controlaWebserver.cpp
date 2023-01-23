@@ -21,7 +21,6 @@ void ControlaWebserver::notFound()
 {
     if (!handleFileRead(server.uri()))
     {
-        Serial.println("NotFound sem arquivo");
         String message = "File Not Found\n\n";
         message += "URI: ";
         message += server.uri();
@@ -83,7 +82,9 @@ void ControlaWebserver::setstreamers()
 {
     File file = LittleFS.open("/streamers.json", "w");
     String json = this->server.arg("plain");
+#ifdef DEBUG
     Serial.println(json);
+#endif
     file.print(json);
     file.close();
     server.send(200, "application/json", "{\"status\":\"success\"}");
@@ -93,7 +94,9 @@ void ControlaWebserver::setsecrets()
 {
     File file = LittleFS.open("/secrets.json", "w");
     String json = this->server.arg("plain");
+#ifdef DEBUG
     Serial.println(json);
+#endif
     file.print(json);
     file.close();
     server.send(200, "application/json", "{\"status\":\"success\"}");

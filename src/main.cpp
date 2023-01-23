@@ -29,13 +29,13 @@ void verificaStreamers() {
         if (controlaTwitch.streamerIsOn((char *)starON.recuperaStreamerName(i).c_str()))
         {
           leds.configuraCorDoPixel(contador, starON.recuperaStreamerR(i), starON.recuperaStreamerG(i), starON.recuperaStreamerB(i));
-          Serial.printf("O Streamer %s está ON\n\n", starON.recuperaStreamerName(i).c_str());
+          Serial.printf("O Streamer %s está ON\n", starON.recuperaStreamerName(i).c_str());
           leds.mostra();
           contador++;
         }
         else {
           leds.configuraCorDoPixel(contador, BLACK);
-          Serial.printf("O Streamer %s está OFF\n\n", starON.recuperaStreamerName(i).c_str());
+          Serial.printf("O Streamer %s está OFF\n", starON.recuperaStreamerName(i).c_str());
         }
       }
     }
