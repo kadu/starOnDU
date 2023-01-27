@@ -56,6 +56,7 @@ void setup() {
   delay(3000);
   Serial.println(F("\n\nInicializando!\n"));
 
+
   ControlaWIFI controlaWIFI;
   controlaWebserver.configura();
   starON.configura();
@@ -68,13 +69,16 @@ void setup() {
   //timer.setInterval(5*60000, verificaStreamers);
   //verificaStreamers();
 
-  controlaTwitch.streamerIsOn("kaduzius");
+  //controlaTwitch.streamerIsOn("kaduzius");
   // controlaTwitch.streamerIsOn("id_akira");
   // controlaTwitch.streamerIsOn("chartosgameplay");
   // controlaTwitch.streamerIsOn("ladonerd");
   // controlaTwitch.streamerIsOn("jp_amis");
   // controlaTwitch.streamerIsOn("Gaules");
   // controlaTwitch.streamerIsOn("SydHeresy");
+
+
+
 
 
   for (size_t i = 0; i < 4; i++)
