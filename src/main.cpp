@@ -5,43 +5,48 @@
 #include "controles/controlaWebserver.h"
 #include "controles/controlaTwitch.h"
 #include "staron.h"
-#include "segredos/segredos.h"
 
 #define PINODOLED D1
-#define NUMERODELEDS 16
+#define NUMERODELEDS 9
+#define DEBUG 1
 
 ControlaLed leds(PINODOLED, NUMERODELEDS, NEO_GRB + NEO_KHZ800);
 ControlaWebserver controlaWebserver;
 ControlaTwitch controlaTwitch;
 StarON starON;
-SimpleTimer timer;
+//SimpleTimer timer;
 
 void verificaStreamers() {
-    starON.configura();
-    Serial.print("Uptime (s): ");
-    Serial.println(millis() / 1000);
+    Serial.println("verificaStreamer");
+    if(!starON.configura()) {
+      Serial.print("Sem configurações (Streamers ou API)");
+      return;
+    }
+
     leds.limpa();
 
-    int contador = 1;
     for (size_t i = 0; i < 4; i++)
     {
       if((char *)starON.recuperaStreamerName(i).length() > 0) {
+        Serial.printf("O Streamer %s está....:", starON.recuperaStreamerName(i).c_str());
         if (controlaTwitch.streamerIsOn((char *)starON.recuperaStreamerName(i).c_str()))
         {
-          leds.configuraCorDoPixel(contador, starON.recuperaStreamerR(i), starON.recuperaStreamerG(i), starON.recuperaStreamerB(i));
-          Serial.printf("O Streamer %s está ON\n", starON.recuperaStreamerName(i).c_str());
+          leds.configuraCorDoPixel(i, starON.recuperaStreamerR(i), starON.recuperaStreamerG(i), starON.recuperaStreamerB(i));
           leds.mostra();
-          contador++;
+          Serial.println("ON");
         }
-        else {
-          leds.configuraCorDoPixel(contador, BLACK);
-          Serial.printf("O Streamer %s está OFF\n", starON.recuperaStreamerName(i).c_str());
+        else
+        {
+          leds.configuraCorDoPixel(i, BLACK);
+          leds.mostra();
+          Serial.println("OFF");
         }
       }
     }
     leds.mostra();
-}
 
+  Serial.println("VerificaSctreamers OFF");
+}
 
 void setup() {
   leds.inicializa();
@@ -49,7 +54,7 @@ void setup() {
   leds.mostra();
   Serial.begin(115200);
   delay(3000);
-  Serial.println("Inicializando!");
+  Serial.println(F("\n\nInicializando!\n"));
 
   ControlaWIFI controlaWIFI;
   controlaWebserver.configura();
@@ -59,11 +64,55 @@ void setup() {
     (char *)starON.recuperarSecret().c_str()
   );
 
-  verificaStreamers();
-  timer.setInterval(5*60000, verificaStreamers);
+  // controlaWebserver.forcaAtualizacao(true);
+  //timer.setInterval(5*60000, verificaStreamers);
+  //verificaStreamers();
+
+  controlaTwitch.streamerIsOn("kaduzius");
+  // controlaTwitch.streamerIsOn("id_akira");
+  // controlaTwitch.streamerIsOn("chartosgameplay");
+  // controlaTwitch.streamerIsOn("ladonerd");
+  // controlaTwitch.streamerIsOn("jp_amis");
+  // controlaTwitch.streamerIsOn("Gaules");
+  // controlaTwitch.streamerIsOn("SydHeresy");
+
+
+  for (size_t i = 0; i < 4; i++)
+  {
+    char *streamer = (char *)starON.recuperaStreamerName(i).c_str();
+    Serial.println(streamer);
+    if(strlen(streamer) > 0) {
+      Serial.printf("\nO Streamer %s está....:", streamer);
+      if (controlaTwitch.streamerIsOn(streamer))
+      {
+        leds.configuraCorDoPixel(i, starON.recuperaStreamerR(i), starON.recuperaStreamerG(i), starON.recuperaStreamerB(i));
+        leds.mostra();
+        Serial.println("ON");
+      }
+      else
+      {
+        leds.configuraCorDoPixel(i, BLACK);
+        leds.mostra();
+        Serial.println("OFF");
+      }
+    }
+  }
+
+  Serial.println("Fim do Setup");
 }
 
+
+int i = millis() + 5000;
 void loop() {
   controlaWebserver.loop();
-  timer.run();
+//   if(controlaWebserver.forcaAtualizacao()) {
+//     Serial.println("Atualizando...");
+//     verificaStreamers();
+//     controlaWebserver.forcaAtualizacao(false);
+//   }
+//  // timer.run();
+//   if(millis() > i) {
+//     Serial.print(".");
+//     i = millis() + 5000;
+//   }
 }

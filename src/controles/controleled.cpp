@@ -1,6 +1,6 @@
 #include "controleled.h"
-#include <Adafruit_NeoPixel.h>
 #include <Arduino.h>
+#include <Adafruit_NeoPixel.h>
 
 ControlaLed::ControlaLed(int pin, int numpixels, neoPixelType t)
 {
@@ -17,6 +17,11 @@ void ControlaLed::inicializa()
 void ControlaLed::limpa()
 {
   this->pixels.clear();
+  for (size_t i = 0; i < numpixels; i++)
+  {
+    this->pixels.fill(BLACK,0,15);
+  }
+
   this->pixels.show();
 }
 

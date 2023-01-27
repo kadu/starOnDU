@@ -1,7 +1,7 @@
 #include "staron.h"
 
-#include <string>
 #include <Arduino.h>
+#include <string>
 #include <LittleFS.h>
 #include <ArduinoJson.h>
 
@@ -34,18 +34,19 @@ void StarON::adicionaSecretEID(std::string secret, std::string streamerid)
 
 void StarON::recuperaStreamer(int index)
 {
-    Serial.print("Nome.: ");
+    Serial.print(F("Nome.: "));
     Serial.println(this->streamer[index].nome.c_str());
-    Serial.print("R.: ");
+    Serial.print(F("R.: "));
     Serial.println(this->streamer[index].corR);
-    Serial.print("G.: ");
+    Serial.print(F("G.: "));
     Serial.println(this->streamer[index].corG);
-    Serial.print("B.: ");
+    Serial.print(F("B.: "));
     Serial.println(this->streamer[index].corB);
 }
 
 std::string StarON::recuperaStreamerName(int index)
 {
+    Serial.println("RecuperaStreamerName");
     return this->streamer[index].nome.c_str();
 }
 
@@ -65,8 +66,11 @@ int StarON::recuperaStreamerB(int index)
 }
 
 
-void StarON::configura()
+bool StarON::configura()
 {
+    bool streamersOK = false;
+    bool configOK = false;
+    Serial.println("StarON::Configura");
     if (LittleFS.exists("/streamers.json"))
     {
         File file = LittleFS.open("/streamers.json", "r");
@@ -89,6 +93,7 @@ void StarON::configura()
             String strAux = docarray["streamer"].as<String>();
             if(strlen(strAux.c_str()) != 0)
             {
+                streamersOK = true;
                 adicionaStreamer(
                     contador,
                     strAux.c_str(),
@@ -114,6 +119,7 @@ void StarON::configura()
         }
 
         if(docconfig["clientId"].as<String>().length() > 0) {
+            configOK = true;
             String clientAux = docconfig["clientId"].as<String>();
             String secretAux = docconfig["secret"].as<String>();
             adicionaSecretEID(secretAux.c_str(), clientAux.c_str());
@@ -122,6 +128,8 @@ void StarON::configura()
 
         file.close();
     }
+
+    return configOK && streamersOK;
 }
 
 std::string StarON::recuperarClientId()

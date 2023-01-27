@@ -10,12 +10,15 @@ class ControlaWebserver {
         bool handleFileRead(String path);
         void setstreamers();
         void setsecrets();
+        boolean atualizar = false;
 
     public:
         ControlaWebserver() = default;
         ControlaWebserver(int port): server{port} {};
         void configura();
         void loop();
+        boolean forcaAtualizacao();
+        void forcaAtualizacao(boolean flag);
 
 
 };

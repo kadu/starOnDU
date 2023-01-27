@@ -1,5 +1,5 @@
 #include "controlaWebserver.h"
-
+#include <Arduino.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
 #include <LittleFS.h>
@@ -88,6 +88,7 @@ void ControlaWebserver::setstreamers()
     file.print(json);
     file.close();
     server.send(200, "application/json", "{\"status\":\"success\"}");
+    atualizar = true;
 }
 
 void ControlaWebserver::setsecrets()
@@ -100,4 +101,15 @@ void ControlaWebserver::setsecrets()
     file.print(json);
     file.close();
     server.send(200, "application/json", "{\"status\":\"success\"}");
+    atualizar = true;
+}
+
+boolean ControlaWebserver::forcaAtualizacao()
+{
+    return atualizar;
+}
+
+void ControlaWebserver::forcaAtualizacao(boolean flag)
+{
+    this->atualizar = flag;
 }

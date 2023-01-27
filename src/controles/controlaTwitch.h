@@ -23,5 +23,4 @@ class ControlaTwitch
     char *getToken();
     void setToken(char *token);
     void getAuth();
-    void debuga();
 };
