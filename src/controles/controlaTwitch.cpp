@@ -10,30 +10,26 @@ StaticJsonDocument<2048> doc;
 
 ControlaTwitch::ControlaTwitch()
 {
-
 }
 
 void ControlaTwitch::adicionaChaves(char *clientId, char *clientSecret)
 {
-  Serial.println("adicionachave");
   this->identification.clientId = clientId;
   this->identification.clientSecret = clientSecret;
 }
 
 void ControlaTwitch::getAuth()
 {
-  Serial.println("getauth");
   BearSSL::WiFiClientSecure myClient;
   HTTPClient https;
   myClient.setInsecure();
 
-#ifdef DEBUG
-  Serial.print("Trying to get oauth2 token...: ");
-#endif
+  log("Trying to get oauth2 token...: ");
+
 
   if (!https.begin(myClient, "https://id.twitch.tv/oauth2/token"))
   {
-    Serial.println(F("Unable to connect"));
+    log("Unable to connect\n");
   }
 
   https.addHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -49,17 +45,17 @@ void ControlaTwitch::getAuth()
 
   if (httpCode == 0 || httpCode >= 400)
   {
-    Serial.println("[HTTPS] POST... failed, error: " + https.errorToString(httpCode));
-    Serial.println(F("Error on HTTP request"));
+    auto logmsg = "[HTTPS] POST... failed, error: " + https.errorToString(httpCode);
+    log((char *)logmsg.c_str()); log("\n");
+    log("Error on HTTP request");
   }
 
 
-#ifdef DEBUG
-  Serial.println("Token received.");
-  Serial.println("[HTTPS] POST... code: " + String(httpCode) + " len: " + https.getSize());
-  Serial.println("Access token received.");
-  Serial.println(https.getString());
-#endif
+  log("Token received.\n");
+  auto logmsg = "[HTTPS] POST... code: " + String(httpCode) + " len: " + https.getSize();
+  log((char *)logmsg.c_str()); log("\n");
+  log("Access token received.\n");
+  log((char *)https.getString().c_str()); log("\n");
 
   if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY)
   {
@@ -72,8 +68,9 @@ void ControlaTwitch::getAuth()
     DeserializationError error = deserializeJson(root, https.getString());
     if (error)
     {
-      Serial.print(F("getUserData deserializeJson() failed: "));
-      Serial.println(error.c_str());
+      log("getUserData deserializeJson() failed: ");
+      log((char *)error.c_str());
+      log("\n");
     }
     else
     {
@@ -82,81 +79,96 @@ void ControlaTwitch::getAuth()
   }
 }
 
-  int ControlaTwitch::streamerIsOn(char *streamerName)
+int ControlaTwitch::streamerIsOn(char *streamerName)
+{
+  getAuth();
+
+  BearSSL::WiFiClientSecure myClient;
+  HTTPClient https;
+
+  myClient.setInsecure();
+  char url[256];
+
+  sprintf(url, "https://api.twitch.tv/helix/streams?user_login=%s", streamerName);
+  auto logmsg = "Getting info from streamer (url): " + String(url);
+  log((char *)logmsg.c_str()); log("\n");
+
+
+  if (!https.begin(myClient, url))
   {
-    Serial.println("streamerison");
-    getAuth();
-
-    BearSSL::WiFiClientSecure myClient;
-    HTTPClient https;
-
-    myClient.setInsecure();
-    char url[256];
-
-    sprintf(url, "https://api.twitch.tv/helix/streams?user_login=%s", streamerName);
-    Serial.println("Getting info from streamer (url): " + String(url));
-
-    if (!https.begin(myClient, url))
-    {
-        Serial.println(F("connection failed\n wait 5 sec..."));
-        return false;
-    }
-
-    https.addHeader("Authorization", "Bearer " + String(this->identification.token.c_str()));
-    https.addHeader("Client-Id", this->identification.clientId.c_str());
-
-    int httpCode = https.GET();
-
-    if (httpCode == 0)
-    {
-        Serial.println("[HTTPS] GET... failed, error: " + https.errorToString(httpCode));
-        Serial.println(F("Error on HTTP request"));
-        return false;
-    }
-
-    Serial.println();
-    Serial.println("[HTTPS] GET... code: " + String(httpCode) +" len: "+ https.getSize());
-    if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY)
-    {
-        String payload = https.getString();
-
-        auto error = deserializeJson(doc, payload);
-        if (error)
-        {
-            Serial.println("deserializeJson() failed: " + String(error.c_str()));
-            return false;
-        }
-
-        Serial.println("############# Returned payload: ");
-        serializeJsonPretty(doc, Serial);
-        Serial.println("");
-        Serial.println("############# Payload ended");
-
-        const char *user_name = doc["data"][0]["user_name"];
-        bool isOn = user_name != NULL;
-
-        return isOn;
-    }
-
+    log("connection failed\n wait 5 sec...\n");
     return false;
   }
 
-  char *ControlaTwitch::getClientId()
+  https.addHeader("Authorization", "Bearer " + String(this->identification.token.c_str()));
+  https.addHeader("Client-Id", this->identification.clientId.c_str());
+
+  int httpCode = https.GET();
+
+  if (httpCode == 0)
   {
-    return (char *)this->identification.clientId.c_str();
+    auto logmsg = "[HTTPS] GET... failed, error: " + https.errorToString(httpCode);
+    log((char *)logmsg.c_str());
+    log("Error on HTTP request");
+    return false;
   }
 
-  char *ControlaTwitch::getClientSecret()
+  log("\n");
+  auto mensagem = "[HTTPS] GET... code: " + String(httpCode) + " len: " + https.getSize();
+  log((char*)mensagem.c_str());
+  if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY)
   {
-    return (char *)this->identification.clientSecret.c_str();
+    String payload = https.getString();
+
+    auto error = deserializeJson(doc, payload);
+    if (error)
+    {
+      auto logmsg = "deserializeJson() failed: " + String(error.c_str());
+      log((char *)logmsg.c_str()); log("\n");
+      return false;
+    }
+
+    log("############# Returned payload: \n");
+    if(this->isInDebugState)
+      serializeJsonPretty(doc, Serial);
+    log("############# Payload ended");
+
+    const char *user_name = doc["data"][0]["user_name"];
+    bool isOn = user_name != NULL;
+
+    return isOn;
   }
 
-  void ControlaTwitch::setToken(char *token)
-  {
-    this->identification.token = token;
-  }
+  return false;
+}
 
-  char *ControlaTwitch::getToken()
-  {
-    return (char *)this->identification.token.c_str();
-  }
+char *ControlaTwitch::getClientId()
+{
+  return (char *)this->identification.clientId.c_str();
+}
+
+char *ControlaTwitch::getClientSecret()
+{
+  return (char *)this->identification.clientSecret.c_str();
+}
+
+void ControlaTwitch::setToken(char *token)
+{
+  this->identification.token = token;
+}
+
+char *ControlaTwitch::getToken()
+{
+  return (char *)this->identification.token.c_str();
+}
+
+void ControlaTwitch::setDebugState(bool debugState)
+{
+  this->isInDebugState = debugState;
+}
+
+void ControlaTwitch::log(char *message)
+{
+  if(this->isInDebugState)
+    Serial.print(message);
+}

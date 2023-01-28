@@ -46,7 +46,6 @@ void StarON::recuperaStreamer(int index)
 
 std::string StarON::recuperaStreamerName(int index)
 {
-    Serial.println("RecuperaStreamerName");
     return this->streamer[index].nome.c_str();
 }
 
@@ -70,7 +69,6 @@ bool StarON::configura()
 {
     bool streamersOK = false;
     bool configOK = false;
-    Serial.println("StarON::Configura");
     if (LittleFS.exists("/streamers.json"))
     {
         File file = LittleFS.open("/streamers.json", "r");

@@ -13,6 +13,7 @@ class ControlaTwitch
 {
   private:
     TWITCH_VARS identification;
+    bool isInDebugState = false;
 
   public:
     ControlaTwitch();
@@ -23,4 +24,6 @@ class ControlaTwitch
     char *getToken();
     void setToken(char *token);
     void getAuth();
+    void setDebugState(bool debugState);
+    void log(char *message);
 };
