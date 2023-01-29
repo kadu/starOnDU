@@ -1,7 +1,6 @@
 #include <Arduino.h>
 #include <SimpleTimer.h>
 #include <Adafruit_NeoPixel.h>
-// #include "controles/controleled.h"
 #include "controles/controlawifi.h"
 #include "controles/controlaWebserver.h"
 #include "controles/controlaTwitch.h"
@@ -18,7 +17,7 @@ StarON starON;
 SimpleTimer timer;
 
 void verificaStreamers() {
-    Serial.println("verificaStreamer");
+    Serial.println("\nverificaStreamer\n");
     if(!starON.configura()) {
       Serial.print("Sem configurações (Streamers ou API)");
       return;
@@ -42,15 +41,10 @@ void verificaStreamers() {
         }
       }
     }
-    // leds.mostra();
 
-  Serial.println("VerificaSctreamers OFF");
 }
 
 void setup() {
-  // leds.inicializa();
-  // leds.limpa();
-  // leds.mostra();
   pixels.begin();
   Serial.begin(115200);
   Serial.println(F("\n\nInicializando!\n"));
