@@ -47,10 +47,12 @@ let pegaInformacoes = () => {
     })
     .catch((error) => {
       console.error('Error:', error);
+      document.getElementById('body').classList.toggle('loading');
     });
 }
 
 document.getElementById('btnenviar').onclick = () => {
+  document.getElementById('body').classList.toggle('loading');
   pegaInformacoes();
 }
 
