@@ -1,0 +1,55 @@
+body {
+    background-color: #0053A0;
+    font-family: 'Oswald', sans-serif;
+    color: antiquewhite;
+}
+
+.center {
+    display: flex;
+    justify-content: center;
+}
+
+.row {
+    display: flex;
+    justify-content: center;
+}
+
+.column {
+    padding: 45px;
+}
+
+img.icons {
+    width: 80px;
+}
+
+.row a {
+    font-size: xx-large;
+    color: white;
+    padding: 15px;
+}
+
+a {
+    color: gold
+}
+
+
+form {
+    width: 200px;
+}
+
+input {
+    width: 98%;
+}
+
+input.jscolor {
+    width: 127px;
+}
+
+img.pagina {
+  display: block;
+  margin-left: auto;
+  width: 200px;
+  position: absolute;
+  top: 0px;
+  right: 0px;
+}
