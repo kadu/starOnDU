@@ -23,7 +23,7 @@ void verificaStreamers() {
       return;
     }
 
-    for (size_t i = 0; i < 4; i++)
+    for (size_t i = 0; i < 9; i++)
     {
       if((char *)starON.recuperaStreamerName(i).length() > 0) {
         Serial.printf("O Streamer %s está....:", starON.recuperaStreamerName(i).c_str());
@@ -46,6 +46,7 @@ void verificaStreamers() {
 
 void setup() {
   pixels.begin();
+  pixels.setBrightness(50);
   Serial.begin(115200);
   Serial.println(F("\n\nInicializando!\n"));
 
@@ -66,6 +67,7 @@ void setup() {
 
 
 int i = millis() + 5000;
+
 void loop() {
   controlaWebserver.loop();
   if(controlaWebserver.forcaAtualizacao()) {

@@ -13,7 +13,7 @@ class StarON {
     private:
         std::string secret;
         std::string streamerid;
-        Streamer streamer[4];
+        Streamer streamer[9];
         int quantidadeStreamers;
 
     public:

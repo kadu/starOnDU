@@ -10,7 +10,7 @@ StaticJsonDocument<2048> docarray;
 
 void StarON::adicionaStreamer(int index, std::string nome, int r, int g, int b)
 {
-    if (index < 4)
+    if (index < 9)
     {
         this->streamer[index].nome = nome;
         this->streamer[index].corR = r;
